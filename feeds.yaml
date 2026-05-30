@@ -1,8 +1,7 @@
-feeds:
-  - name: DBBL
-    url: https://toyota-dbbl.de/news/1-bundesliga/feed/
-    channel: fem-int
-    tags:
-      - DBBL
-      - Alemania
-      - femenino
+- name: DBBL
+  url: https://toyota-dbbl.de/news/1-bundesliga/feed/
+  channel: fem_int
+  tags:
+    - DBBL
+    - Alemania
+    - femenino
