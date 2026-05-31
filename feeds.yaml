@@ -15,3 +15,21 @@
     - LFEndesa
     - España
     - Femenino
+- name: LF Challenge
+  type: scraper
+  layout: feb_v1
+  url: https://www.feb.es/lfchallenge/noticias.aspx
+  channel: esp
+  tags:
+    - LFChallenge
+    - España
+    - Femenino
+- name: LF2
+  type: scraper
+  layout: feb_v1
+  url: https://www.feb.es/ligafemenina2/noticias.aspx
+  channel: esp
+  tags:
+    - LF2
+    - España
+    - Femenino

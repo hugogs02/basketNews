@@ -7,21 +7,16 @@ from sources.scraper_layouts import LAYOUTS
 
 
 def get_articles(url, layout="generic"):
-
     html = requests.get(url, timeout=10).text
     soup = BeautifulSoup(html, "html.parser")
-
     config = LAYOUTS.get(layout, LAYOUTS["generic"])
-
     articles = []
 
-    # ---------------- LAYOUT MODE ----------------
+    # Layout
     if config.get("item"):
-
         items = soup.select(config["item"])
 
         for item in items:
-
             title_el = item.select_one(config["title"])
             link_el = item.select_one(config["link"])
             summary_el = item.select_one(config.get("summary"))
@@ -45,12 +40,11 @@ def get_articles(url, layout="generic"):
 
         return articles
 
-    # ---------------- GENERIC MODE ----------------
+    # Generic mode
     links = soup.find_all("a")
     seen = set()
 
     for a in links:
-
         title = a.get_text(" ", strip=True)
         link = a.get("href", "")
 

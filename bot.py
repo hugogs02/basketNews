@@ -12,8 +12,7 @@ init_db()
 
 BASE_URL = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 
-
-# ---------------- LOGGING ----------------
+#Logging
 LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
 
@@ -24,8 +23,7 @@ logging.basicConfig(
     encoding="utf-8"
 )
 
-
-# ---------------- CONFIG ----------------
+# Configurations
 with open("feeds.yaml", "r", encoding="utf-8") as f:
     FEEDS = yaml.safe_load(f)
 
@@ -33,9 +31,8 @@ with open("channels.yaml", "r", encoding="utf-8") as f:
     CHANNELS = yaml.safe_load(f)["channels"]
 
 
-# ---------------- TELEGRAM ----------------
+# Telegram sender
 def send_message(chat_id, text):
-
     payload = {
         "chat_id": chat_id,
         "text": text,
@@ -47,10 +44,9 @@ def send_message(chat_id, text):
     logging.info(f"Telegram: {r.status_code} | {text[:80]}")
 
 
-# ---------------- FORMAT ----------------
+# Format Telegram message
 def format_message(tags, title, summary, link):
-
-    hashtags = " ".join(f"#{t.replace(' ', '_')}" for t in tags)
+    hashtags = " ".join(f"#{t.replace(' ', '')}" for t in tags)
 
     return (
         f"<b>{html.escape(hashtags)}</b>\n"
@@ -60,33 +56,20 @@ def format_message(tags, title, summary, link):
     )
 
 
-# ---------------- PROCESS ----------------
+# Process articles
 def process_articles(articles, feed_name, chat_id, tags):
-
     for a in articles:
-
         link = a["link"]
 
-        if exists(link):
-            continue
+        if exists(link): continue
 
-        message = format_message(
-            tags,
-            a["title"],
-            a["summary"],
-            link
-        )
-
+        message = format_message(tags, a["title"], a["summary"], link)
         send_message(chat_id, message)
-
         save(link, a["title"], feed_name, a["published"])
 
 
-# ---------------- MAIN ----------------
 def main():
-
     for feed in FEEDS:
-
         name = feed["name"]
         url = feed["url"]
         feed_type = feed["type"]
@@ -96,17 +79,11 @@ def main():
         tags = feed.get("tags", [])
 
         fetcher = get_source(feed_type)
+        articles = fetcher(url, layout)
+        articles = list(reversed(articles))
 
         logging.info(f"Checking: {name}")
-
-        articles = fetcher(url, layout)
-
-        process_articles(
-            articles,
-            name,
-            chat_id,
-            tags
-        )
+        process_articles(articles, name, chat_id, tags)
 
 
 if __name__ == "__main__":
