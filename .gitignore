@@ -2,3 +2,4 @@ config.py
 *.db
 sent.json
 logs/
+test.py

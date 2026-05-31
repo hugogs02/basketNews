@@ -51,3 +51,12 @@
     - SegundaFEB
     - España
     - Masculino
+- name: ACB
+  type: scraper
+  layout: acb_v1
+  url: https://acb.com/es/liga/noticias
+  channel: espmasc
+  tags:
+    - ACB
+    - España
+    - Masculino

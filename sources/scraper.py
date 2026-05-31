@@ -13,30 +13,77 @@ def get_articles(url, layout="generic"):
     config = LAYOUTS.get(layout, LAYOUTS["generic"])
     articles = []
 
+    if config.get("type") == "api":
+        r = requests.get(
+            "https://backoffice.prod.acb.com/api/pages/"
+            "?type=news.ArticlePage"
+            "&fields=short_title,excerpt,first_published_at,url"
+            "&limit=20"
+            "&offset=0"
+            "&order=-first_published_at",
+            timeout=10
+        )
+
+        data = r.json()
+        items = (
+            data.get("items")
+            or data.get("results")
+            or data.get("data")
+            or []
+        )
+
+        print("ACB ITEMS:", len(items))
+
+        for item in items:
+
+            link = item.get("url", "")
+            if link.startswith("/"):
+                link = "https://acb.com" + link
+
+            articles.append({
+                "title": item.get("short_title", ""),
+                "link": link,
+                "summary": item.get("excerpt", ""),
+                "published": (
+                    item.get("first_published_at", "")
+                    .replace("T", " ")
+                    .replace("Z", "")
+                )
+            })
+
+        return articles
+
     # Layout
     if config.get("item"):
         items = soup.select(config["item"])
 
         for item in items:
-            title_el = item.select_one(config["title"])
-            link_el = item.select_one(config["link"])
-            summary_el = item.select_one(config.get("summary"))
 
-            if not title_el or not link_el:
+            # ------------------------
+            # LINK (SIEMPRE desde <a>)
+            # ------------------------
+            link = item.get("href", "")
+
+            # ------------------------
+            # TITLE
+            # ------------------------
+            title_el = item.select_one("h3")
+            title = title_el.get_text(strip=True) if title_el else ""
+
+            if not title:
                 continue
 
-            title = title_el.get_text(strip=True)
-            link = link_el.get("href", "")
-
-            summary = ""
-            if summary_el:
-                summary = summary_el.get_text(" ", strip=True)
+            # ------------------------
+            # SUMMARY
+            # ------------------------
+            summary_el = item.select_one("p")
+            summary = summary_el.get_text(" ", strip=True) if summary_el else ""
 
             articles.append({
                 "title": title,
                 "link": urljoin(url, link),
                 "summary": summary,
-                "published": datetime.now().strftime("%Y-%m-%d %H:%M")
+                "published": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             })
 
         return articles

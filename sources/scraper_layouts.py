@@ -6,6 +6,10 @@ LAYOUTS = {
         "summary": "div.entradilla"
     },
 
+    "acb_v1": {
+        "item": "a[data-testid='article-card-link']"
+    },
+
     "generic": {
         "item": None
     }
