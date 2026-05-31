@@ -10,7 +10,7 @@
   type: scraper
   layout: feb_v1
   url: https://www.feb.es/lfendesa/noticias.aspx
-  channel: esp
+  channel: espfem
   tags:
     - LFEndesa
     - España
@@ -19,7 +19,7 @@
   type: scraper
   layout: feb_v1
   url: https://www.feb.es/lfchallenge/noticias.aspx
-  channel: esp
+  channel: espfem
   tags:
     - LFChallenge
     - España
@@ -28,8 +28,26 @@
   type: scraper
   layout: feb_v1
   url: https://www.feb.es/ligafemenina2/noticias.aspx
-  channel: esp
+  channel: espfem
   tags:
     - LF2
     - España
     - Femenino
+- name: PrimeraFEB
+  type: scraper
+  layout: feb_v1
+  url: https://www.feb.es/primerafeb/noticias.aspx
+  channel: espmasc
+  tags:
+    - PrimeraFEB
+    - España
+    - Masculino
+- name: SegundaFEB
+  type: scraper
+  layout: feb_v1
+  url: https://www.feb.es/segundafeb/noticias.aspx
+  channel: espmasc
+  tags:
+    - SegundaFEB
+    - España
+    - Masculino

@@ -7,7 +7,8 @@ from sources.scraper_layouts import LAYOUTS
 
 
 def get_articles(url, layout="generic"):
-    html = requests.get(url, timeout=10).text
+    response = requests.get(url, timeout=10)
+    html = response.content.decode(response.apparent_encoding, errors="replace")
     soup = BeautifulSoup(html, "html.parser")
     config = LAYOUTS.get(layout, LAYOUTS["generic"])
     articles = []
