@@ -1,51 +1,43 @@
 import sqlite3
-from pathlib import Path
 
-DB_PATH = Path(__file__).parent / "feeds.db"
-
-
-def get_conn():
-    return sqlite3.connect(DB_PATH)
+DB = "feeds.db"
 
 
 def init_db():
-    conn = get_conn()
+    conn = sqlite3.connect(DB)
     c = conn.cursor()
 
     c.execute("""
-    CREATE TABLE IF NOT EXISTS sent_articles (
-        link TEXT PRIMARY KEY,
-        title TEXT,
-        feed_name TEXT,
-        published_date TEXT,
-        sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
+        CREATE TABLE IF NOT EXISTS news (
+            link TEXT PRIMARY KEY,
+            title TEXT,
+            source TEXT,
+            published TEXT
+        )
     """)
 
     conn.commit()
     conn.close()
 
 
-def exists(link: str) -> bool:
-    conn = get_conn()
+def exists(link):
+    conn = sqlite3.connect(DB)
     c = conn.cursor()
 
-    c.execute("SELECT 1 FROM sent_articles WHERE link=?", (link,))
-    result = c.fetchone()
+    c.execute("SELECT 1 FROM news WHERE link = ?", (link,))
+    row = c.fetchone()
 
     conn.close()
-    return result is not None
+    return row is not None
 
 
-def save(link: str, title: str, feed_name: str, published_date: str):
-    conn = get_conn()
+def save(link, title, source, published):
+    conn = sqlite3.connect(DB)
     c = conn.cursor()
 
     c.execute("""
-        INSERT OR IGNORE INTO sent_articles 
-        (link, title, feed_name, published_date)
-        VALUES (?, ?, ?, ?)
-    """, (link, title, feed_name, published_date))
+        INSERT OR IGNORE INTO news VALUES (?, ?, ?, ?)
+    """, (link, title, source, published))
 
     conn.commit()
     conn.close()

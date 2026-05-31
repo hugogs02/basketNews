@@ -1,7 +1,17 @@
 - name: DBBL
+  type: rss
   url: https://toyota-dbbl.de/news/1-bundesliga/feed/
   channel: fem_int
   tags:
     - DBBL
     - Alemania
-    - femenino
+    - Femenino
+- name: LF Endesa
+  type: scraper
+  layout: feb_v1
+  url: https://www.feb.es/lfendesa/noticias.aspx
+  channel: esp
+  tags:
+    - LFEndesa
+    - España
+    - Femenino

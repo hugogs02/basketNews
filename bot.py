@@ -1,19 +1,19 @@
 import yaml
-import feedparser
 import requests
 import html
 import logging
-from datetime import datetime
 from pathlib import Path
-from bs4 import BeautifulSoup
+
 from config import TOKEN
 from db import init_db, exists, save
+from sources.dispatcher import get_source
 
 init_db()
 
 BASE_URL = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-MAX_LEN = 250
 
+
+# ---------------- LOGGING ----------------
 LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
 
@@ -24,16 +24,18 @@ logging.basicConfig(
     encoding="utf-8"
 )
 
-# LOAD CONFIG
+
+# ---------------- CONFIG ----------------
 with open("feeds.yaml", "r", encoding="utf-8") as f:
     FEEDS = yaml.safe_load(f)
 
 with open("channels.yaml", "r", encoding="utf-8") as f:
-    CHANNELS = yaml.safe_load(f)
+    CHANNELS = yaml.safe_load(f)["channels"]
 
 
-# TELEGRAM SEND
+# ---------------- TELEGRAM ----------------
 def send_message(chat_id, text):
+
     payload = {
         "chat_id": chat_id,
         "text": text,
@@ -42,11 +44,14 @@ def send_message(chat_id, text):
     }
 
     r = requests.post(BASE_URL, data=payload)
-    logging.info(f"Telegram response: {r.status_code} | {text[:80]}")
+    logging.info(f"Telegram: {r.status_code} | {text[:80]}")
 
 
-# FORMAT MESSAGE
-def format_message(hashtags, title, summary, link):
+# ---------------- FORMAT ----------------
+def format_message(tags, title, summary, link):
+
+    hashtags = " ".join(f"#{t.replace(' ', '_')}" for t in tags)
+
     return (
         f"<b>{html.escape(hashtags)}</b>\n"
         f"<b>{html.escape(title)}</b>\n"
@@ -55,43 +60,54 @@ def format_message(hashtags, title, summary, link):
     )
 
 
-# FETCH FEED
-def fetch_feed(feed_name, feed_url, chat_id, tags):
-    logging.info(f"Checking: {feed_name}")
-    feed = feedparser.parse(feed_url)
+# ---------------- PROCESS ----------------
+def process_articles(articles, feed_name, chat_id, tags):
 
-    for entry in feed.entries:
-        link = entry.get("link", "")
-        title = entry.get("title", "No title")
-        published = entry.get("published")
-        if not published:
-            published = datetime.now().strftime("%Y-%m-%d %H:%M")
+    for a in articles:
 
-        summary = entry.get("summary", "") or entry.get("description", "")
-        summary = BeautifulSoup(summary,"html.parser").get_text(" ", strip=True)
-        summary = summary[:MAX_LEN] + "..." if len(summary) > MAX_LEN else summary
-
-        hashtags = " ".join(f"#{tag.replace(' ', '_')}" for tag in tags)
+        link = a["link"]
 
         if exists(link):
             continue
 
-        message = format_message(hashtags=hashtags, title=title, summary=summary, link=link)
+        message = format_message(
+            tags,
+            a["title"],
+            a["summary"],
+            link
+        )
 
         send_message(chat_id, message)
 
-        save(link, title, feed_name, published)
+        save(link, a["title"], feed_name, a["published"])
 
 
-# MAIN LOOP
+# ---------------- MAIN ----------------
 def main():
+
     for feed in FEEDS:
+
         name = feed["name"]
         url = feed["url"]
+        feed_type = feed["type"]
+        layout = feed.get("layout", "generic")
+
         chat_id = CHANNELS[feed["channel"]]
         tags = feed.get("tags", [])
 
-        fetch_feed(name, url, chat_id, tags)
+        fetcher = get_source(feed_type)
+
+        logging.info(f"Checking: {name}")
+
+        articles = fetcher(url, layout)
+
+        process_articles(
+            articles,
+            name,
+            chat_id,
+            tags
+        )
+
 
 if __name__ == "__main__":
     main()
