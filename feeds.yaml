@@ -78,3 +78,22 @@
     - SerieA2
     - Italia
     - Femenino
+- name: BasketLBF
+  type: scraper
+  layout: ffbb_v1
+  url: https://basketlfb.com/laboulangerewonderligue/actualites
+  channel: fem_int
+  tags:
+    - LBWL
+    - Francia
+    - Femenino
+
+- name: CoupeDeFranceFem
+  type: scraper
+  layout: ffbb_v1
+  url: https://coupedefrance.ffbb.com/actualites
+  channel: fem_int
+  tags:
+    - CopaFrancia
+    - Francia
+    - Femenino

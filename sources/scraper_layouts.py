@@ -17,7 +17,15 @@ LAYOUTS = {
         "summary": "span.news_text",
         "date": "span.news_Date"
     },
-    
+
+    "ffbb_v1": {
+        "item": "section.main__news-list__entry",
+        "title": "h3",
+        "link": "div.main__news-list__content a",
+        "summary": "div.main__news-list__content p:not(.news__date)",
+        "date": "p.news__date"
+    },
+
     "generic": {
         "item": None
     }
