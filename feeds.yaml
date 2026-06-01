@@ -60,3 +60,21 @@
     - ACB
     - España
     - Masculino
+- name: SerieA1
+  type: scraper
+  layout: lbf_v1
+  url: https://www.legabasketfemminile.it/Media/NewsArchive.aspx?t=1
+  channel: fem_int
+  tags:
+    - SerieA1
+    - Italia
+    - Femenino
+- name: SerieA2
+  type: scraper
+  layout: lbf_v1
+  url: https://www.legabasketfemminile.it/Media/NewsArchive.aspx?t=2
+  channel: fem_int
+  tags:
+    - SerieA2
+    - Italia
+    - Femenino

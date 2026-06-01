@@ -10,6 +10,14 @@ LAYOUTS = {
         "item": "a[data-testid='article-card-link']"
     },
 
+    "lbf_v1": {
+        "item": "div.row",
+        "title": "span.news_title",
+        "link": "div.archiveTile_Title a",
+        "summary": "span.news_text",
+        "date": "span.news_Date"
+    },
+    
     "generic": {
         "item": None
     }
