@@ -139,14 +139,21 @@ def get_articles(url, layout="generic"):
             return []
 
         base_url = config.get("base_url", url)
+        base = base_url.rstrip("/")
 
         for item in items:
 
             permalink = item.get("permalink", "")
+            item_id = item.get("id", "")
+
+            if item_id and permalink:
+                link = f"{base}/{item_id}/{permalink}"
+            else:
+                link = base_url + permalink
 
             articles.append({
                 "title": item.get("title", ""),
-                "link": base_url + permalink,
+                "link": link,
                 "summary": item.get("abstract", ""),
                 "published": item.get("publication_date", "")
             })
