@@ -87,7 +87,6 @@
     - LBWL
     - Francia
     - Femenino
-
 - name: CoupeDeFranceFem
   type: scraper
   layout: ffbb_v1
@@ -97,3 +96,12 @@
     - CopaFrancia
     - Francia
     - Femenino
+- name: LBA
+  type: scraper
+  layout: lba_v1
+  url: https://www.legabasket.it/news
+  channel: masc_eur
+  tags:
+    - LBA
+    - Italia
+    - Masculino

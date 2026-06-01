@@ -37,7 +37,7 @@ def get_articles(url, layout="generic"):
         except Exception:
             pass
 
-        # fallback scripts (Next.js / SSR)
+        # fallback scripts (Next.js / SSR JSON embebido)
         if not data:
             for script in soup.find_all("script"):
                 if script.string and "publication_date" in script.string:
@@ -63,6 +63,7 @@ def get_articles(url, layout="generic"):
             return None
 
         items = find_items(data)
+
         if not items:
             return []
 
@@ -97,7 +98,63 @@ def get_articles(url, layout="generic"):
         return articles
 
     # =========================================================
-    # 2. HTML LAYOUT MODE (GENÉRICO Y ROBUSTO)
+    # 2. NEXT.JS MODE (LBA / LEGABASKET)
+    # =========================================================
+    if config.get("type") == "nextjs":
+
+        script = soup.find("script", {"id": config.get("script_id", "__NEXT_DATA__")})
+
+        if not script:
+            return []
+
+        try:
+            data = json.loads(script.string)
+        except Exception:
+            return []
+
+        def find_contents(obj):
+
+            if isinstance(obj, dict):
+
+                if "contents" in obj and isinstance(obj["contents"], list):
+                    return obj["contents"]
+
+                for value in obj.values():
+                    res = find_contents(value)
+                    if res:
+                        return res
+
+            elif isinstance(obj, list):
+
+                for value in obj:
+                    res = find_contents(value)
+                    if res:
+                        return res
+
+            return None
+
+        items = find_contents(data)
+
+        if not items:
+            return []
+
+        base_url = config.get("base_url", url)
+
+        for item in items:
+
+            permalink = item.get("permalink", "")
+
+            articles.append({
+                "title": item.get("title", ""),
+                "link": base_url + permalink,
+                "summary": item.get("abstract", ""),
+                "published": item.get("publication_date", "")
+            })
+
+        return articles
+
+    # =========================================================
+    # 3. HTML LAYOUT MODE (GENÉRICO Y ROBUSTO)
     # =========================================================
     if config.get("item"):
 
@@ -114,15 +171,11 @@ def get_articles(url, layout="generic"):
                 if el:
                     title = el.get_text(strip=True)
 
-            if not title:
-                continue
-
-            # filtro anti-basura
-            if len(title) < 10:
+            if not title or len(title) < 10:
                 continue
 
             # ------------------------
-            # LINK (CORRECTO Y ROBUSTO)
+            # LINK
             # ------------------------
             link = ""
 
@@ -131,7 +184,6 @@ def get_articles(url, layout="generic"):
                 if el:
                     link = el.get("href", "")
 
-            # fallback importante
             if not link:
                 a = item.find("a")
                 if a:
@@ -149,7 +201,6 @@ def get_articles(url, layout="generic"):
                 if el:
                     summary = el.get_text(" ", strip=True)
 
-            # limpieza básica
             summary = summary.strip()
 
             # ------------------------
@@ -172,7 +223,7 @@ def get_articles(url, layout="generic"):
         return articles
 
     # =========================================================
-    # 3. GENERIC MODE (FALLBACK FINAL)
+    # 4. GENERIC MODE (FALLBACK FINAL)
     # =========================================================
     links = soup.find_all("a")
     seen = set()

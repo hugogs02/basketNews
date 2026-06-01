@@ -26,6 +26,12 @@ LAYOUTS = {
         "date": "p.news__date"
     },
 
+    "lba_v1": {
+        "type": "nextjs",
+        "script_id": "__NEXT_DATA__",
+        "base_url": "https://www.legabasket.it/news/"
+    },
+
     "generic": {
         "item": None
     }
