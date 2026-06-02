@@ -105,3 +105,12 @@
     - LBA
     - Italia
     - Masculino
+- name: DBB
+  type: scraper
+  layout: easycredit_bbl
+  url: https://www.easycredit-bbl.de/newscenter
+  channel: masc_eur
+  tags:
+    - DBB
+    - Alemania
+    - Masculino

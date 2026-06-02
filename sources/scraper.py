@@ -159,9 +159,69 @@ def get_articles(url, layout="generic"):
             })
 
         return articles
+    
+    # =========================================================
+    # 3. NEXT.JS POSTS MODE (EASYCREDIT BBL)
+    # =========================================================
+    if config.get("type") == "nextjs_posts":
+
+        script = soup.find("script", id="__NEXT_DATA__")
+
+        if not script or not script.string:
+            return []
+
+        try:
+            data = json.loads(script.string)
+        except Exception:
+            return []
+
+        def find_posts(obj):
+
+            if isinstance(obj, dict):
+
+                if "posts" in obj and isinstance(obj["posts"], list):
+                    return obj["posts"]
+
+                for value in obj.values():
+                    res = find_posts(value)
+                    if res:
+                        return res
+
+            elif isinstance(obj, list):
+
+                for value in obj:
+                    res = find_posts(value)
+                    if res:
+                        return res
+
+            return None
+
+        posts = find_posts(data)
+
+        if not posts:
+            return []
+
+        for post in posts:
+
+            title = post.get("postTitle", "")
+            link = post.get("permalink", "")
+            summary = post.get("postExcerpt", "")[:150] + "..."
+            published = post.get("postPublished", "")
+
+            if not title or not link:
+                continue
+
+            articles.append({
+                "title": title,
+                "link": link,
+                "summary": summary,
+                "published": published
+            })
+
+        return articles
 
     # =========================================================
-    # 3. HTML LAYOUT MODE (GENÉRICO Y ROBUSTO)
+    # 3. HTML LAYOUT MODE
     # =========================================================
     if config.get("item"):
 

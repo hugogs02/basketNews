@@ -32,6 +32,10 @@ LAYOUTS = {
         "base_url": "https://www.legabasket.it/news/"
     },
 
+    "easycredit_bbl": {
+        "type": "nextjs_posts"
+    },
+
     "generic": {
         "item": None
     }
