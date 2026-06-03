@@ -252,9 +252,12 @@ def get_articles(url, layout="generic"):
                     link = el.get("href", "")
 
             if not link:
-                a = item.find("a")
-                if a:
-                    link = a.get("href", "")
+                if item.name == "a":
+                    link = item.get("href", "")
+                else:
+                    a = item.find("a")
+                    if a:
+                        link = a.get("href", "")
 
             if not link:
                 continue

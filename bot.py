@@ -2,8 +2,9 @@ import yaml
 import requests
 import html
 import logging
-from pathlib import Path
 
+from pathlib import Path
+from logging.handlers import RotatingFileHandler
 from config import TOKEN
 from db import init_db, exists, save
 from sources.dispatcher import get_source
@@ -16,11 +17,17 @@ BASE_URL = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
 LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
 
+handler = RotatingFileHandler(
+    LOG_DIR / "bot.log", 
+    maxBytes=5*1024*1024,  # 5 MB
+    backupCount=2,
+    encoding="utf-8"
+)
+
 logging.basicConfig(
-    filename=LOG_DIR / "bot.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    encoding="utf-8"
+    handlers=[handler]
 )
 
 # Configurations

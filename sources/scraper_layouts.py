@@ -7,7 +7,10 @@ LAYOUTS = {
     },
 
     "acb_v1": {
-        "item": "a[data-testid='article-card-link']"
+        "item": "a[data-testid='article-card-link']",
+        "title": "h3",
+        "link": None,
+        "summary": "p"
     },
 
     "lbf_v1": {
