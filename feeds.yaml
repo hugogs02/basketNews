@@ -6,7 +6,7 @@
     - DBBL
     - Alemania
     - Femenino
-- name: DBBL-allgemein
+- name: DBBL_allgemein
   type: rss
   url: https://toyota-dbbl.de/news/allgemein/feed/
   channel: fem_int
