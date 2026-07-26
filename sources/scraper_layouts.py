@@ -39,6 +39,17 @@ LAYOUTS = {
         "type": "nextjs_posts"
     },
 
+    "fiba_clubs": {
+        "type": "api",
+        "fields": {
+            "title": "title",
+            "summary": "summary",
+            "date": "publishedAt",
+            "link": "url"
+        },
+        "base_url": "https://www.fiba.basketball"
+    },
+
     "generic": {
         "item": None
     }
